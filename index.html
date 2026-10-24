@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Project Graveyard — every abandoned project has a story</title>
+<meta name="description" content="Keep track of projects you never finished, understand why they stopped, and decide whether to revive them.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<canvas id="fx" aria-hidden="true"></canvas>
+
+<header class="nav">
+  <a class="brand" href="#top">Project Graveyard</a>
+  <nav>
+    <a href="#graveyard">Graveyard</a>
+    <a href="#revivers">Co-revivers</a>
+    <a href="#stories">Stories</a>
+    <button class="btn gold sm" data-act="add">Bury a project</button>
+  </nav>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="rays" aria-hidden="true"></div>
+    <div class="yard" id="yard" aria-hidden="true"></div>
+    <div class="fog" aria-hidden="true"></div>
+    <div class="hero-copy">
+      <h1>Every abandoned project has a story. Some deserve a second life.</h1>
+      <p>Discover forgotten code. Understand what went wrong. Bring great ideas back to life.</p>
+      <div class="cta">
+        <a class="btn em" href="#graveyard">Explore the Graveyard</a>
+        <a class="btn ghost" href="#graveyard" data-act="pick-revive">Revive a Project</a>
+      </div>
+      <dl class="stats" id="stats"></dl>
+    </div>
+  </section>
+
+  <section id="graveyard" class="sec">
+    <h2>The Graveyard</h2>
+    <p class="lead">Every project you gave up on, with the reason it stopped. Open one to see its autopsy and decide what happens next.</p>
+    <div class="filters">
+      <input id="q" type="search" placeholder="Search name, language, category, stack" aria-label="Search projects">
+      <select id="fLang" aria-label="Language"></select>
+      <select id="fReason" aria-label="Why it stopped"></select>
+      <select id="fSort" aria-label="Sort">
+        <option value="recent">Last active: newest</option>
+        <option value="old">Last active: oldest</option>
+        <option value="done">Most complete</option>
+      </select>
+    </div>
+    <div id="grid" class="grid"></div>
+    <p id="empty" class="empty" hidden>No project matches these filters. Clear a filter, or bury a new project.</p>
+  </section>
+
+  <section id="revivers" class="sec">
+    <h2>Find co-revivers</h2>
+    <p class="lead">Projects whose owners want help. Each lists the skills needed and the open tasks.</p>
+    <div id="helpList" class="grid small"></div>
+  </section>
+
+  <section id="stories" class="sec">
+    <h2>Resurrection stories</h2>
+    <p class="lead">Projects that came back, with what changed. Entries marked Sample are demo data.</p>
+    <div id="storyList" class="grid small"></div>
+  </section>
+</main>
+
+<footer class="foot">
+  <p>Frontend-only build. Projects are stored in this browser. GitHub scan uses the public GitHub API. Revival plans are rule-based, not AI-generated. Sample projects are labeled.</p>
+</footer>
+
+<dialog id="detail" aria-label="Project details"></dialog>
+
+<dialog id="addDlg" aria-label="Bury a project">
+  <form id="addForm" method="dialog" class="form">
+    <div class="dhead"><h3>Bury a project</h3><button type="button" class="x" data-act="close" aria-label="Close">×</button></div>
+    <label>GitHub repo (optional)
+      <span class="row"><input name="repo" placeholder="owner/repo"><button type="button" class="btn ghost sm" data-act="scan">Scan repo</button></span>
+    </label>
+    <p id="scanMsg" class="note" role="status"></p>
+    <label>Project name<input name="name" required></label>
+    <label>What it was and what you wanted to build<textarea name="desc" rows="2" required></textarea></label>
+    <div class="two">
+      <label>Main language<input name="lang" required placeholder="JavaScript"></label>
+      <label>Category<input name="cat" required placeholder="Web app"></label>
+    </div>
+    <div class="two">
+      <label>Last worked on<input type="date" name="last" required></label>
+      <label>Why you stopped<select name="reason" id="reasonSel"></select></label>
+    </div>
+    <label>What you completed (one per line)<textarea name="done" rows="3"></textarea></label>
+    <label>What is still unfinished (one per line)<textarea name="todo" rows="3"></textarea></label>
+    <label>Tech stack (comma separated)<input name="stack"></label>
+    <button class="btn em" type="submit">Add to graveyard</button>
+  </form>
+</dialog>
+
+<script src="js/app.js"></script>
+</body>
+</html>
