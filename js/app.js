@@ -119,17 +119,16 @@ function renderGrid() {
   if (!grid) return;
   const l = filtered();
   grid.innerHTML = l.map(card).join('');
-  $('#empty').hidden = l.length > 0;
+  if ($('#empty')) $('#empty').hidden = l.length > 0;
   observe();
 }
 function fillFilters() {
-  $('#reasonSel').innerHTML = REASONS.map(x => `<option>${x}</option>`).join('');
+  if ($('#reasonSel')) $('#reasonSel').innerHTML = REASONS.map(x => `<option>${x}</option>`).join('');
   if (!$('#fLang')) return;
   const lv = $('#fLang').value, rv = $('#fReason').value;
   $('#fLang').innerHTML = '<option value="">All languages</option>' + [...new Set(projects.map(p => p.lang))].sort().map(x => `<option>${esc(x)}</option>`).join('');
   $('#fReason').innerHTML = '<option value="">Any reason</option>' + REASONS.map(x => `<option>${x}</option>`).join('');
   $('#fLang').value = lv; $('#fReason').value = rv;
-  $('#reasonSel').innerHTML = REASONS.map(x => `<option>${x}</option>`).join('');
 }
 function renderStats() {
   if (!$('#stats')) return;
@@ -144,9 +143,9 @@ function renderHelp() {
   $('#helpList').innerHTML = l.length ? l.map(p => {
     const open = p.tasks.filter(t => !t.done);
     return `<article class="path"><h5>${esc(p.name)}</h5><p class="note">Skills: ${esc(p.stack.join(', ') || p.lang)}</p>
-    <p>${open.length ? open.slice(0, 3).map(t => '• ' + esc(t.title)).join('<br>') : 'Generate a revival plan to list open tasks.'}</p>
-    <button class="btn ghost sm" data-act="open" data-id="${p.id}">See how to help</button></article>`;
-  }).join('') : '<p class="empty">No project is asking for help yet. Open a project and turn on “Looking for co-revivers”.</p>';
+    <p>${open.length ? open.slice(0, 3).map(t => '• ' + esc(t.title)).join('<br>') : 'Open this project in the Canvas and drop it on “Generate plan” to list open tasks.'}</p>
+    <a class="btn ghost sm" href="canvas.html?p=${p.id}">See how to help</a></article>`;
+  }).join('') : '<p class="empty">No project is asking for help yet. In the Canvas, drag a project onto “Ask for co-revivers”.</p>';
 }
 function renderStories() {
   if (!$('#storyList')) return;
@@ -155,23 +154,23 @@ function renderStories() {
     <p><b>Problem:</b> ${esc(p.reason)}. <b>Path:</b> ${esc(p.path || '-')}</p>
     <ul class="tl">${p.tl.map(x => `<li>${esc(x.t)}<small>${esc(x.d)}</small></li>`).join('')}</ul>
     ${p.live ? `<a class="btn ghost sm" href="${esc(p.live)}" target="_blank" rel="noopener">Live demo</a>` : ''}</article>`).join('')
-    : '<p class="empty">No project has been revived yet. Revive one and its story appears here.</p>';
+    : '<p class="empty">No project has been revived yet. Revive one in the Canvas and its story appears here.</p>';
 }
 function renderLab() {
   const el = $('#labList'); if (!el) return;
   const l = projects.filter(p => p.status === 'buried' || p.status === 'reviving');
   el.innerHTML = l.length ? l.map(p => { const d = p.tasks.filter(t => t.done).length, n = p.tasks.length;
     return `<article class="path"><h5>${esc(p.name)}${p.sample ? '<span class="sample">Sample</span>' : ''}</h5><p class="note">${esc(p.lang)} · ${pct(p)}% built · ${esc(p.reason)}</p>
-    <p>${n ? d + '/' + n + ' plan tasks done' : 'No plan yet. Open it to read the autopsy and generate one.'}</p>
-    <button class="btn em sm" data-act="open" data-id="${p.id}">${n ? 'Continue reviving' : 'Start revival'}</button></article>`; }).join('')
-    : '<p class="empty">Nothing is waiting for revival. Bury a project to start.</p>';
+    <p>${n ? d + '/' + n + ' plan tasks done' : 'No plan yet. Open it in the Canvas to generate one.'}</p>
+    <a class="btn em sm" href="canvas.html?p=${p.id}">${n ? 'Continue reviving' : 'Start revival'}</a></article>`; }).join('')
+    : '<p class="empty">Nothing is waiting for revival. Bury a project in the Canvas to start.</p>';
 }
 function refresh() { fillFilters(); renderGrid(); renderStats(); renderHelp(); renderStories(); renderLab(); }
 
-/* detail dialog */
+/* detail dialog (view only: all actions happen in the Canvas) */
 const dlg = $('#detail'); let cur = null;
 function renderDetail() {
-  const p = byId(cur); if (!p) return;
+  const p = byId(cur); if (!p || !dlg) return;
   const ps = paths(p), tasks = p.tasks, done = tasks.filter(t => t.done).length;
   const prog = tasks.length ? Math.round(100 * done / tasks.length) : 0;
   dlg.innerHTML = `<div class="dwrap">
@@ -184,45 +183,28 @@ function renderDetail() {
   <div class="blk"><h4>Project autopsy</h4>
     <p class="note">Why it stopped (owner-reported): <b>${esc(p.reason)}</b>. Findings below come from repository evidence only.</p>
     ${autopsy(p).map(f => `<div class="find"><span class="ev ${f.lvl}">${f.lvl === 'y' ? 'Healthy' : f.lvl === 'n' ? 'Issue' : 'Unknown'}</span><div>${esc(f.text)}<div class="note">Source: ${f.src}</div></div></div>`).join('')}</div>
-  <div class="blk"><h4>Choose a revival path</h4><div class="paths">
-    ${ps.map(x => `<div class="path ${x.top ? 'top' : ''} ${p.path === x.k ? 'chosen' : ''}"><h5>${x.name}${x.top ? ' · suggested' : ''}</h5><p>${esc(x.why)}</p>
-    <button class="btn ${p.path === x.k ? 'em' : 'ghost'} sm" data-act="path" data-k="${x.k}">${p.path === x.k ? 'Chosen' : 'Choose this path'}</button></div>`).join('')}</div></div>
+  <div class="blk"><h4>Revival paths</h4><div class="paths">
+    ${ps.map(x => `<div class="path ${x.top ? 'top' : ''} ${p.path === x.k ? 'chosen' : ''}"><h5>${x.name}${x.top ? ' · suggested' : ''}${p.path === x.k ? ' · chosen' : ''}</h5><p>${esc(x.why)}</p></div>`).join('')}</div></div>
   <div class="blk"><h4>Resurrection plan</h4>
-    <p class="note">Rule-based plan built from the findings above. Effort ranges are rough estimates.</p>
-    ${tasks.length ? `<div class="bar"><i style="width:${prog}%"></i></div><div class="pct">${done}/${tasks.length} tasks done</div>` : ''}
-    ${tasks.map(t => `<div class="task ${t.done ? 'done' : ''}"><div><span class="tt">${esc(t.title)}</span><div class="pr">${t.pr} · est. ${t.eff}</div></div>
-      <div>${!t.accepted ? `<button class="btn ghost sm" data-act="accept" data-t="${t.id}">Accept</button>` : `<button class="btn ${t.done ? 'em' : 'ghost'} sm" data-act="done" data-t="${t.id}">${t.done ? 'Done' : 'Mark done'}</button>`}</div></div>`).join('')}
-    <div class="acts"><button class="btn em sm" data-act="plan">${tasks.length ? 'Regenerate plan' : 'Generate revival plan'}</button></div></div>
+    ${tasks.length ? `<div class="bar"><i style="width:${prog}%"></i></div><div class="pct">${done}/${tasks.length} tasks done</div>` : '<p class="note">No plan yet. Open the Canvas and drop this project on “Generate plan”.</p>'}
+    ${tasks.map(t => `<div class="task ${t.done ? 'done' : ''}"><div><span class="tt">${esc(t.title)}</span><div class="pr">${t.pr} · est. ${t.eff} · ${t.done ? 'Done' : t.accepted ? 'Accepted' : 'Backlog'}</div></div></div>`).join('')}</div>
   <div class="blk"><h4>Timeline</h4><ul class="tl">${p.tl.slice().sort((a, b) => a.d.localeCompare(b.d)).map(x => `<li>${esc(x.t)}<small>${esc(x.d)}</small></li>`).join('')}</ul></div>
   <div class="blk acts">
-    <button class="btn ghost sm" data-act="help">${p.help ? 'Stop asking for help' : 'Looking for co-revivers'}</button>
-    ${p.status !== 'revived' ? '<button class="btn em sm" data-act="revived">Mark as revived</button>' : ''}
-    ${p.status !== 'archived' ? '<button class="btn ghost sm" data-act="archive">Archive</button>' : ''}
-    ${p.repo ? `<a class="btn ghost sm" target="_blank" rel="noopener" href="https://github.com/${esc(p.repo)}/issues">Repo issues</a>` : ''}
-    <button class="btn danger sm" data-act="delete">Remove</button></div>
+    <a class="btn em sm" href="canvas.html?p=${p.id}">Work on this in the Canvas</a>
+    ${p.repo ? `<a class="btn ghost sm" target="_blank" rel="noopener" href="https://github.com/${esc(p.repo)}/issues">Repo issues</a>` : ''}</div>
   </div>`;
 }
-function openDetail(id) { cur = id; renderDetail(); if (!dlg.open) dlg.showModal(); dlg.scrollTop = 0; }
+function openDetail(id) { if (!dlg) return; cur = id; renderDetail(); if (!dlg.open) dlg.showModal(); dlg.scrollTop = 0; }
 
-/* actions (event delegation) */
+/* navigation clicks (event delegation). Primary actions live in the Canvas. */
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-act]'); if (!b) return;
-  const a = b.dataset.act, p = byId(cur);
-  if (a === 'add') { $('#addDlg').showModal(); return; }
-  if (a === 'close') { b.closest('dialog').close(); return; }
-  if (a === 'pick-revive') { $('#fSort').value = 'done'; renderGrid(); return; }
+  const a = b.dataset.act;
+  if (a === 'add') { if ($('#addDlg')) $('#addDlg').showModal(); else location.href = 'canvas.html'; return; }
+  if (a === 'close') { const d = b.closest('dialog'); if (d) d.close(); return; }
+  if (a === 'pick-revive') { if ($('#fSort')) { $('#fSort').value = 'done'; renderGrid(); } return; }
   if (a === 'open') { openDetail(b.dataset.id); return; }
   if (a === 'scan') { scanRepo(); return; }
-  if (!p) return;
-  if (a === 'path') { p.path = b.dataset.k; log(p, 'Chose path: ' + paths(p).find(x => x.k === p.path).name); }
-  if (a === 'plan') { p.tasks = makePlan(p); log(p, 'Generated revival plan (' + p.tasks.length + ' tasks)'); }
-  if (a === 'accept') { const t = p.tasks.find(x => x.id === b.dataset.t); t.accepted = true; if (p.status === 'buried') p.status = 'reviving'; log(p, 'Accepted task: ' + t.title); }
-  if (a === 'done') { const t = p.tasks.find(x => x.id === b.dataset.t); t.done = !t.done; if (t.done) log(p, 'Completed: ' + t.title); store.save(); }
-  if (a === 'help') { p.help = !p.help; store.save(); }
-  if (a === 'revived') { const u = prompt('Live demo or repo URL (optional, must start with https://)', ''); p.live = /^https?:\/\//.test(u || '') ? u : ''; p.status = 'revived'; log(p, 'Marked revived'); toast('Moved to Resurrection stories'); }
-  if (a === 'archive') { p.status = 'archived'; log(p, 'Archived'); }
-  if (a === 'delete') { if (!confirm('Remove this project?')) return; projects = projects.filter(x => x.id !== p.id); store.save(); dlg.close(); refresh(); return; }
-  store.save(); renderDetail(); refresh();
 });
 grid?.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.dataset.id) openDetail(e.target.dataset.id); });
 ['q', 'fLang', 'fReason', 'fSort'].forEach(id => $('#' + id)?.addEventListener('input', renderGrid));
@@ -230,7 +212,8 @@ grid?.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.datas
 /* ---------- add project + GitHub scan (public API, no token) ---------- */
 let scanned = null;
 async function scanRepo() {
-  const f = $('#addForm'), repo = f.repo.value.trim().replace(/^https?:\/\/github\.com\//, ''), msg = $('#scanMsg');
+  const f = $('#addForm'), msg = $('#scanMsg'); if (!f) return;
+  const repo = f.repo.value.trim().replace(/^https?:\/\/github\.com\//, '');
   if (!/^[\w.-]+\/[\w.-]+$/.test(repo)) { msg.textContent = 'Enter the repo as owner/repo.'; return; }
   msg.textContent = 'Scanning…';
   try {
@@ -255,7 +238,7 @@ async function scanRepo() {
     msg.textContent = 'Scan complete. README, open issues, test files and last push were read from GitHub. Dependencies were not scanned.';
   } catch (err) { msg.textContent = err.message || 'Scan failed.'; }
 }
-$('#addForm').addEventListener('submit', e => {
+$('#addForm')?.addEventListener('submit', e => {
   const f = e.target;
   const p = {
     id: 'u' + Date.now(), name: f.name.value.trim(), desc: f.desc.value.trim(), lang: f.lang.value.trim(), cat: f.cat.value.trim(),
@@ -264,7 +247,7 @@ $('#addForm').addEventListener('submit', e => {
     ev: scanned ? scanned.ev : { readme: 'unknown', issues: null, deps: 'unknown', tests: null }, repo: scanned ? scanned.repo : '',
     tl: [{ d: f.last.value, t: 'Last worked on' }, { d: today(), t: 'Added to the graveyard' }]
   };
-  projects.unshift(p); store.save(); scanned = null; f.reset(); $('#scanMsg').textContent = '';
+  projects.unshift(p); store.save(); scanned = null; f.reset(); if ($('#scanMsg')) $('#scanMsg').textContent = '';
   refresh(); toast('Added to the graveyard'); if (!grid) setTimeout(() => location.href = 'graveyard.html', 700);
 });
 
@@ -287,7 +270,8 @@ const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 })();
 (function particles() {
   if (reduce) return;
-  const c = $('#fx'), g = c.getContext('2d'); let W, H, run = true;
+  const c = $('#fx'); if (!c) return;
+  const g = c.getContext('2d'); let W, H, run = true;
   const N = innerWidth < 700 ? 22 : 55, P = [];
   const size = () => { W = c.width = innerWidth; H = c.height = innerHeight; }; size(); addEventListener('resize', size);
   for (let i = 0; i < N; i++) P.push({ x: Math.random() * W, y: Math.random() * H, r: Math.random() * 1.8 + .4, v: Math.random() * .35 + .1, g: Math.random() < .35 });
