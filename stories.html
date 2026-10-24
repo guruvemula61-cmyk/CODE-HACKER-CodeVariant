@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Resurrection stories — Project Graveyard</title>
+<meta name="description" content="Revived projects and their timelines.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<canvas id="fx" aria-hidden="true"></canvas>
+<header class="nav">
+  <a class="brand" href="index.html">Project Graveyard</a>
+  <nav><a href="index.html">Home</a><a href="graveyard.html">Graveyard</a><a href="lab.html">Lab</a><a href="revivers.html">Co-revivers</a><a href="stories.html" aria-current="page">Stories</a><button class="btn gold sm" data-act="add">Bury a project</button></nav>
+</header>
+<main id="top">
+<section class="banner" style="--img:url(stories.jpg)"><h1>Resurrection stories</h1><p>Projects that came back, with what changed. Entries marked Sample are demo data.</p></section><section class="sec"><div id="storyList" class="grid small"></div></section>
+</main>
+<footer class="foot">
+  <p>Frontend-only build. Projects are stored in this browser. GitHub scan uses the public GitHub API. Revival plans are rule-based, not AI-generated. Sample projects are labeled.</p>
+</footer>
+<dialog id="detail" aria-label="Project details"></dialog>
+
+<dialog id="addDlg" aria-label="Bury a project">
+  <form id="addForm" method="dialog" class="form">
+    <div class="dhead"><h3>Bury a project</h3><button type="button" class="x" data-act="close" aria-label="Close">×</button></div>
+    <label>GitHub repo (optional)
+      <span class="row"><input name="repo" placeholder="owner/repo"><button type="button" class="btn ghost sm" data-act="scan">Scan repo</button></span>
+    </label>
+    <p id="scanMsg" class="note" role="status"></p>
+    <label>Project name<input name="name" required></label>
+    <label>What it was and what you wanted to build<textarea name="desc" rows="2" required></textarea></label>
+    <div class="two">
+      <label>Main language<input name="lang" required placeholder="JavaScript"></label>
+      <label>Category<input name="cat" required placeholder="Web app"></label>
+    </div>
+    <div class="two">
+      <label>Last worked on<input type="date" name="last" required></label>
+      <label>Why you stopped<select name="reason" id="reasonSel"></select></label>
+    </div>
+    <label>What you completed (one per line)<textarea name="done" rows="3"></textarea></label>
+    <label>What is still unfinished (one per line)<textarea name="todo" rows="3"></textarea></label>
+    <label>Tech stack (comma separated)<input name="stack"></label>
+    <button class="btn em" type="submit">Add to graveyard</button>
+  </form>
+</dialog>
+
+<script src="js/app.js"></script>
+</body>
+</html>
