@@ -3,70 +3,138 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Project Graveyard — every abandoned project has a story</title>
 <meta name="description" content="Keep track of projects you never finished, understand why they stopped, and decide whether to revive them.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="preload" as="image" href="hero.jpg">
-<link rel="stylesheet" href="css/style.css">
+<title>The Project Graveyard — every abandoned project has a story</title>
+<style>
+  :root{--bg:#0b100f;--panel:#121a18;--line:#22302c;--text:#e8efec;--mute:#93a39d;--green:#34c796;--gold:#cfa851}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.6}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+  header{position:sticky;top:0;z-index:10;background:rgba(11,16,15,.9);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  header .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-top:12px;padding-bottom:12px;flex-wrap:wrap}
+  .logo{font-weight:800;letter-spacing:.3px}
+  .logo span{color:var(--green)}
+  nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+  nav a{padding:6px 12px;border-radius:999px;color:var(--mute);font-size:14px;font-weight:600}
+  nav a:hover{color:var(--text);background:var(--panel)}
+  nav a.canvas{background:var(--green);color:#06130e}
+  nav a.canvas:hover{background:#4ddbae;color:#06130e}
+  .hero{position:relative;overflow:hidden;padding:90px 0 80px;text-align:center;background:radial-gradient(ellipse at 50% 0,rgba(52,199,150,.16),transparent 60%)}
+  .hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:90px;background:linear-gradient(transparent,var(--bg))}
+  .tombs{position:absolute;inset:auto 0 0 0;height:140px;display:flex;justify-content:space-around;align-items:flex-end;opacity:.35;pointer-events:none}
+  .tombs i{display:block;width:54px;background:#1a2623;border:1px solid var(--line);border-radius:30px 30px 0 0}
+  .tombs i:nth-child(1){height:70px}.tombs i:nth-child(2){height:110px}.tombs i:nth-child(3){height:80px}.tombs i:nth-child(4){height:125px}.tombs i:nth-child(5){height:90px}.tombs i:nth-child(6){height:105px}.tombs i:nth-child(7){height:75px}
+  .hero .wrap{position:relative;z-index:1}
+  .kicker{color:var(--gold);font-weight:700;letter-spacing:2px;font-size:13px;text-transform:uppercase}
+  h1{font-size:clamp(32px,6vw,58px);line-height:1.1;margin:14px auto;max-width:820px}
+  h1 em{font-style:normal;color:var(--green)}
+  .lead{color:var(--mute);font-size:18px;max-width:640px;margin:0 auto 28px}
+  .cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .btn{display:inline-block;padding:12px 22px;border-radius:12px;font-weight:700;border:1px solid var(--line)}
+  .btn.em{background:var(--green);color:#06130e;border-color:var(--green)}
+  .btn.em:hover{background:#4ddbae}
+  .btn.ghost:hover{background:var(--panel)}
+  #stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:34px auto 0;max-width:760px;padding:0}
+  #stats div{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
+  #stats dt{font-size:12px;color:var(--mute)}
+  #stats dd{margin:2px 0 0;font-size:26px;font-weight:800;color:var(--green)}
+  section{padding:64px 0}
+  h2{font-size:clamp(24px,4vw,34px);margin:0 0 8px}
+  .sub{color:var(--mute);margin:0 0 28px;max-width:640px}
+  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .card{display:block;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;transition:.2s}
+  .card:hover{transform:translateY(-4px);border-color:var(--green)}
+  .card h3{margin:0 0 6px;font-size:18px}
+  .card p{margin:0;color:var(--mute);font-size:14px}
+  .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .step{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px}
+  .step b{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--green);color:#06130e;margin-bottom:10px}
+  .step h3{margin:0 0 6px}
+  .step p{margin:0;color:var(--mute);font-size:14px}
+  .canvasband{background:linear-gradient(135deg,#10231d,#0f1a18);border:1px solid var(--line);border-radius:20px;padding:34px;text-align:center}
+  .canvasband p{color:var(--mute);max-width:620px;margin:8px auto 22px}
+  footer{border-top:1px solid var(--line);padding:26px 0;color:var(--mute);font-size:13px;text-align:center}
+  @media(max-width:860px){.cards,.steps{grid-template-columns:1fr 1fr}#stats{grid-template-columns:1fr 1fr}}
+  @media(max-width:520px){.cards,.steps{grid-template-columns:1fr}.hero{padding:60px 0}}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
 </head>
 <body>
-<canvas id="fx" aria-hidden="true"></canvas>
-<header class="nav">
-  <a class="brand" href="index.html">Project Graveyard</a>
-  <nav><a href="index.html" aria-current="page">Home</a><a href="graveyard.html">Graveyard</a><a href="lab.html">Lab</a><a href="revivers.html">Co-revivers</a><a href="stories.html">Stories</a><button class="btn gold sm" data-act="add">Bury a project</button></nav>
-</header>
-<main id="top">
-<section class="hero">
-  <div class="hero-bg" style="background-image:url(hero.jpg)"></div>
-  <div class="rays" aria-hidden="true"></div><div class="fog" aria-hidden="true"></div>
-  <div class="hero-copy">
-    <h1>Every abandoned project has a story. Some deserve a second life.</h1>
-    <p>Discover forgotten code. Understand what went wrong. Bring great ideas back to life.</p>
-    <div class="cta"><a class="btn em" href="graveyard.html">Explore the Graveyard</a><a class="btn ghost" href="lab.html">Revive a Project</a></div>
-    <dl class="stats" id="stats"></dl>
-  </div>
-</section>
-<section class="sec"><h2>Four places, one journey</h2><p class="lead">Record what you never finished, read its autopsy, plan the comeback, and find people to help.</p>
-<div class="tiles">
-<a class="tile" href="graveyard.html"><img src="graveyard.jpg" alt="" loading="lazy" width="800" height="800"><h3>The Graveyard</h3><p>Browse every abandoned project and why it stopped.</p></a>
-<a class="tile" href="lab.html"><img src="lab.jpg" alt="" loading="lazy" width="800" height="800"><h3>Resurrection Lab</h3><p>Read the autopsy and work through a revival plan.</p></a>
-<a class="tile" href="revivers.html"><img src="revivers.jpg" alt="" loading="lazy" width="800" height="800"><h3>Co-revivers</h3><p>Projects asking for help, with skills and open tasks.</p></a>
-<a class="tile" href="stories.html"><img src="stories.jpg" alt="" loading="lazy" width="800" height="800"><h3>Resurrection stories</h3><p>Projects that came back, with their timeline.</p></a>
-</div></section>
-<section class="engine" style="--img:url(engine.jpg)"><h2>The Resurrection Engine</h2><p class="lead">Four steps from a forgotten repository to a working project. Rule-based, and honest about what it cannot see.</p><div class="stages"><div class="stage"><b>1</b><h3>Scan</h3><p>Reads a public GitHub repo: README, open issues, test files and the last push date.</p></div><div class="stage"><b>2</b><h3>Diagnose</h3><p>Turns evidence into findings marked Healthy, Issue or Unknown, each with its source.</p></div><div class="stage"><b>3</b><h3>Plan</h3><p>Builds prioritized tasks (P1 to P3) with rough effort ranges from the findings.</p></div><div class="stage"><b>4</b><h3>Revive</h3><p>Accept tasks, tick them off, follow the timeline, and mark the project revived with a link.</p></div></div></section>
-<section class="cta-band" style="--img:url(gate.jpg)"><h2>Your unfinished project is still worth something.</h2>
-<div class="cta"><button class="btn em" data-act="add">Bury a project</button><a class="btn ghost" href="graveyard.html">Explore the Graveyard</a></div></section>
-</main>
-<footer class="foot">
-  <p>Frontend-only build. Projects are stored in this browser. GitHub scan uses the public GitHub API. Revival plans are rule-based, not AI-generated. Sample projects are labeled.</p>
-</footer>
-<dialog id="detail" aria-label="Project details"></dialog>
 
-<dialog id="addDlg" aria-label="Bury a project">
-  <form id="addForm" method="dialog" class="form">
-    <div class="dhead"><h3>Bury a project</h3><button type="button" class="x" data-act="close" aria-label="Close">×</button></div>
-    <label>GitHub repo (optional)
-      <span class="row"><input name="repo" placeholder="owner/repo"><button type="button" class="btn ghost sm" data-act="scan">Scan repo</button></span>
-    </label>
-    <p id="scanMsg" class="note" role="status"></p>
-    <label>Project name<input name="name" required></label>
-    <label>What it was and what you wanted to build<textarea name="desc" rows="2" required></textarea></label>
-    <div class="two">
-      <label>Main language<input name="lang" required placeholder="JavaScript"></label>
-      <label>Category<input name="cat" required placeholder="Web app"></label>
+<header>
+  <div class="wrap">
+    <a class="logo" href="index.html">Project <span>Graveyard</span></a>
+    <nav aria-label="Main">
+      <a href="index.html">Home</a>
+      <a href="graveyard.html">Graveyard</a>
+      <a href="lab.html">Lab</a>
+      <a href="revivers.html">Co-revivers</a>
+      <a href="stories.html">Stories</a>
+      <a class="canvas" href="canvas.html">Open the Canvas</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="hero">
+    <div class="tombs" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="wrap">
+      <div class="kicker">Build different</div>
+      <h1>Every abandoned project has a story. <em>Some deserve a second life.</em></h1>
+      <p class="lead">Discover forgotten code. Understand what went wrong. Bring great ideas back to life, by dragging cards on the Canvas.</p>
+      <div class="cta">
+        <a class="btn em" href="canvas.html">Open the Canvas</a>
+        <a class="btn ghost" href="graveyard.html">Explore the Graveyard</a>
+      </div>
+      <dl id="stats" aria-label="Graveyard statistics"></dl>
     </div>
-    <div class="two">
-      <label>Last worked on<input type="date" name="last" required></label>
-      <label>Why you stopped<select name="reason" id="reasonSel"></select></label>
+  </div>
+
+  <section>
+    <div class="wrap">
+      <h2>Four places, one journey</h2>
+      <p class="sub">Record what you never finished, read its autopsy, plan the comeback, and find people to help.</p>
+      <div class="cards">
+        <a class="card" href="graveyard.html"><h3>The Graveyard</h3><p>Browse every abandoned project and why it stopped.</p></a>
+        <a class="card" href="lab.html"><h3>Resurrection Lab</h3><p>Read the autopsy and work through a revival plan.</p></a>
+        <a class="card" href="revivers.html"><h3>Co-revivers</h3><p>Projects asking for help, with skills and open tasks.</p></a>
+        <a class="card" href="stories.html"><h3>Resurrection stories</h3><p>Projects that came back, with their timeline.</p></a>
+      </div>
     </div>
-    <label>What you completed (one per line)<textarea name="done" rows="3"></textarea></label>
-    <label>What is still unfinished (one per line)<textarea name="todo" rows="3"></textarea></label>
-    <label>Tech stack (comma separated)<input name="stack"></label>
-    <button class="btn em" type="submit">Add to graveyard</button>
-  </form>
-</dialog>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2>The Resurrection Engine</h2>
+      <p class="sub">Four steps from a forgotten repository to a working project. Rule-based, and honest about what it cannot see.</p>
+      <div class="steps">
+        <div class="step"><b>1</b><h3>Scan</h3><p>Reads a public GitHub repo: README, open issues, test files and the last push date.</p></div>
+        <div class="step"><b>2</b><h3>Diagnose</h3><p>Turns evidence into findings marked Healthy, Issue or Unknown, each with its source.</p></div>
+        <div class="step"><b>3</b><h3>Plan</h3><p>Builds prioritized tasks (P1 to P3) with rough effort ranges from the findings.</p></div>
+        <div class="step"><b>4</b><h3>Revive</h3><p>Drag tasks from Backlog to Accepted to Done, follow the timeline, and mark the project revived.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="canvasband">
+        <h2>The Canvas Protocol</h2>
+        <p>No action buttons. To act, drag a project card into an Action Zone: choose a path, generate a plan, ask for co-revivers, mark it revived, or bury a new project.</p>
+        <div class="cta">
+          <a class="btn em" href="canvas.html">Open the Canvas</a>
+          <a class="btn ghost" href="graveyard.html">Explore the Graveyard</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">Frontend-only build. Projects are stored in this browser. GitHub scan uses the public GitHub API. Revival plans are rule-based, not AI-generated. Sample projects are labeled.</div>
+</footer>
 
 <script src="js/app.js"></script>
 </body>
