@@ -8,71 +8,40 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="hero.jpg">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <canvas id="fx" aria-hidden="true"></canvas>
-
 <header class="nav">
-  <a class="brand" href="#top">Project Graveyard</a>
-  <nav>
-    <a href="#graveyard">Graveyard</a>
-    <a href="#revivers">Co-revivers</a>
-    <a href="#stories">Stories</a>
-    <button class="btn gold sm" data-act="add">Bury a project</button>
-  </nav>
+  <a class="brand" href="index.html">Project Graveyard</a>
+  <nav><a href="index.html" aria-current="page">Home</a><a href="graveyard.html">Graveyard</a><a href="lab.html">Lab</a><a href="revivers.html">Co-revivers</a><a href="stories.html">Stories</a><button class="btn gold sm" data-act="add">Bury a project</button></nav>
 </header>
-
 <main id="top">
-  <section class="hero">
-    <div class="rays" aria-hidden="true"></div>
-    <div class="yard" id="yard" aria-hidden="true"></div>
-    <div class="fog" aria-hidden="true"></div>
-    <div class="hero-copy">
-      <h1>Every abandoned project has a story. Some deserve a second life.</h1>
-      <p>Discover forgotten code. Understand what went wrong. Bring great ideas back to life.</p>
-      <div class="cta">
-        <a class="btn em" href="#graveyard">Explore the Graveyard</a>
-        <a class="btn ghost" href="#graveyard" data-act="pick-revive">Revive a Project</a>
-      </div>
-      <dl class="stats" id="stats"></dl>
-    </div>
-  </section>
-
-  <section id="graveyard" class="sec">
-    <h2>The Graveyard</h2>
-    <p class="lead">Every project you gave up on, with the reason it stopped. Open one to see its autopsy and decide what happens next.</p>
-    <div class="filters">
-      <input id="q" type="search" placeholder="Search name, language, category, stack" aria-label="Search projects">
-      <select id="fLang" aria-label="Language"></select>
-      <select id="fReason" aria-label="Why it stopped"></select>
-      <select id="fSort" aria-label="Sort">
-        <option value="recent">Last active: newest</option>
-        <option value="old">Last active: oldest</option>
-        <option value="done">Most complete</option>
-      </select>
-    </div>
-    <div id="grid" class="grid"></div>
-    <p id="empty" class="empty" hidden>No project matches these filters. Clear a filter, or bury a new project.</p>
-  </section>
-
-  <section id="revivers" class="sec">
-    <h2>Find co-revivers</h2>
-    <p class="lead">Projects whose owners want help. Each lists the skills needed and the open tasks.</p>
-    <div id="helpList" class="grid small"></div>
-  </section>
-
-  <section id="stories" class="sec">
-    <h2>Resurrection stories</h2>
-    <p class="lead">Projects that came back, with what changed. Entries marked Sample are demo data.</p>
-    <div id="storyList" class="grid small"></div>
-  </section>
+<section class="hero">
+  <div class="hero-bg" style="background-image:url(hero.jpg)"></div>
+  <div class="rays" aria-hidden="true"></div><div class="fog" aria-hidden="true"></div>
+  <div class="hero-copy">
+    <h1>Every abandoned project has a story. Some deserve a second life.</h1>
+    <p>Discover forgotten code. Understand what went wrong. Bring great ideas back to life.</p>
+    <div class="cta"><a class="btn em" href="graveyard.html">Explore the Graveyard</a><a class="btn ghost" href="lab.html">Revive a Project</a></div>
+    <dl class="stats" id="stats"></dl>
+  </div>
+</section>
+<section class="sec"><h2>Four places, one journey</h2><p class="lead">Record what you never finished, read its autopsy, plan the comeback, and find people to help.</p>
+<div class="tiles">
+<a class="tile" href="graveyard.html"><img src="graveyard.jpg" alt="" loading="lazy" width="800" height="800"><h3>The Graveyard</h3><p>Browse every abandoned project and why it stopped.</p></a>
+<a class="tile" href="lab.html"><img src="lab.jpg" alt="" loading="lazy" width="800" height="800"><h3>Resurrection Lab</h3><p>Read the autopsy and work through a revival plan.</p></a>
+<a class="tile" href="revivers.html"><img src="revivers.jpg" alt="" loading="lazy" width="800" height="800"><h3>Co-revivers</h3><p>Projects asking for help, with skills and open tasks.</p></a>
+<a class="tile" href="stories.html"><img src="stories.jpg" alt="" loading="lazy" width="800" height="800"><h3>Resurrection stories</h3><p>Projects that came back, with their timeline.</p></a>
+</div></section>
+<section class="engine" style="--img:url(engine.jpg)"><h2>The Resurrection Engine</h2><p class="lead">Four steps from a forgotten repository to a working project. Rule-based, and honest about what it cannot see.</p><div class="stages"><div class="stage"><b>1</b><h3>Scan</h3><p>Reads a public GitHub repo: README, open issues, test files and the last push date.</p></div><div class="stage"><b>2</b><h3>Diagnose</h3><p>Turns evidence into findings marked Healthy, Issue or Unknown, each with its source.</p></div><div class="stage"><b>3</b><h3>Plan</h3><p>Builds prioritized tasks (P1 to P3) with rough effort ranges from the findings.</p></div><div class="stage"><b>4</b><h3>Revive</h3><p>Accept tasks, tick them off, follow the timeline, and mark the project revived with a link.</p></div></div></section>
+<section class="cta-band" style="--img:url(gate.jpg)"><h2>Your unfinished project is still worth something.</h2>
+<div class="cta"><button class="btn em" data-act="add">Bury a project</button><a class="btn ghost" href="graveyard.html">Explore the Graveyard</a></div></section>
 </main>
-
 <footer class="foot">
   <p>Frontend-only build. Projects are stored in this browser. GitHub scan uses the public GitHub API. Revival plans are rule-based, not AI-generated. Sample projects are labeled.</p>
 </footer>
-
 <dialog id="detail" aria-label="Project details"></dialog>
 
 <dialog id="addDlg" aria-label="Bury a project">
