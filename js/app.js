@@ -116,12 +116,15 @@ function filtered() {
   return list;
 }
 function renderGrid() {
+  if (!grid) return;
   const l = filtered();
   grid.innerHTML = l.map(card).join('');
   $('#empty').hidden = l.length > 0;
   observe();
 }
 function fillFilters() {
+  $('#reasonSel').innerHTML = REASONS.map(x => `<option>${x}</option>`).join('');
+  if (!$('#fLang')) return;
   const lv = $('#fLang').value, rv = $('#fReason').value;
   $('#fLang').innerHTML = '<option value="">All languages</option>' + [...new Set(projects.map(p => p.lang))].sort().map(x => `<option>${esc(x)}</option>`).join('');
   $('#fReason').innerHTML = '<option value="">Any reason</option>' + REASONS.map(x => `<option>${x}</option>`).join('');
@@ -129,12 +132,14 @@ function fillFilters() {
   $('#reasonSel').innerHTML = REASONS.map(x => `<option>${x}</option>`).join('');
 }
 function renderStats() {
+  if (!$('#stats')) return;
   const n = projects.length, rv = projects.filter(p => p.status === 'revived').length, ri = projects.filter(p => p.status === 'reviving').length;
   const avg = n ? Math.round(projects.reduce((a, p) => a + pct(p), 0) / n) : 0;
   $('#stats').innerHTML = [['In the graveyard', n], ['Being revived', ri], ['Revived', rv], ['Avg. already built', avg + '%']]
     .map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('');
 }
 function renderHelp() {
+  if (!$('#helpList')) return;
   const l = projects.filter(p => p.help && p.status !== 'archived');
   $('#helpList').innerHTML = l.length ? l.map(p => {
     const open = p.tasks.filter(t => !t.done);
@@ -144,6 +149,7 @@ function renderHelp() {
   }).join('') : '<p class="empty">No project is asking for help yet. Open a project and turn on “Looking for co-revivers”.</p>';
 }
 function renderStories() {
+  if (!$('#storyList')) return;
   const l = projects.filter(p => p.status === 'revived');
   $('#storyList').innerHTML = l.length ? l.map(p => `<article class="path"><h5>${esc(p.name)}${p.sample ? '<span class="sample">Sample</span>' : ''}</h5>
     <p><b>Problem:</b> ${esc(p.reason)}. <b>Path:</b> ${esc(p.path || '-')}</p>
@@ -151,7 +157,16 @@ function renderStories() {
     ${p.live ? `<a class="btn ghost sm" href="${esc(p.live)}" target="_blank" rel="noopener">Live demo</a>` : ''}</article>`).join('')
     : '<p class="empty">No project has been revived yet. Revive one and its story appears here.</p>';
 }
-function refresh() { fillFilters(); renderGrid(); renderStats(); renderHelp(); renderStories(); }
+function renderLab() {
+  const el = $('#labList'); if (!el) return;
+  const l = projects.filter(p => p.status === 'buried' || p.status === 'reviving');
+  el.innerHTML = l.length ? l.map(p => { const d = p.tasks.filter(t => t.done).length, n = p.tasks.length;
+    return `<article class="path"><h5>${esc(p.name)}${p.sample ? '<span class="sample">Sample</span>' : ''}</h5><p class="note">${esc(p.lang)} · ${pct(p)}% built · ${esc(p.reason)}</p>
+    <p>${n ? d + '/' + n + ' plan tasks done' : 'No plan yet. Open it to read the autopsy and generate one.'}</p>
+    <button class="btn em sm" data-act="open" data-id="${p.id}">${n ? 'Continue reviving' : 'Start revival'}</button></article>`; }).join('')
+    : '<p class="empty">Nothing is waiting for revival. Bury a project to start.</p>';
+}
+function refresh() { fillFilters(); renderGrid(); renderStats(); renderHelp(); renderStories(); renderLab(); }
 
 /* detail dialog */
 const dlg = $('#detail'); let cur = null;
@@ -209,8 +224,8 @@ document.addEventListener('click', e => {
   if (a === 'delete') { if (!confirm('Remove this project?')) return; projects = projects.filter(x => x.id !== p.id); store.save(); dlg.close(); refresh(); return; }
   store.save(); renderDetail(); refresh();
 });
-grid.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.dataset.id) openDetail(e.target.dataset.id); });
-['q', 'fLang', 'fReason', 'fSort'].forEach(id => $('#' + id).addEventListener('input', renderGrid));
+grid?.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.dataset.id) openDetail(e.target.dataset.id); });
+['q', 'fLang', 'fReason', 'fSort'].forEach(id => $('#' + id)?.addEventListener('input', renderGrid));
 
 /* ---------- add project + GitHub scan (public API, no token) ---------- */
 let scanned = null;
@@ -250,13 +265,14 @@ $('#addForm').addEventListener('submit', e => {
     tl: [{ d: f.last.value, t: 'Last worked on' }, { d: today(), t: 'Added to the graveyard' }]
   };
   projects.unshift(p); store.save(); scanned = null; f.reset(); $('#scanMsg').textContent = '';
-  refresh(); toast('Added to the graveyard'); location.hash = 'graveyard';
+  refresh(); toast('Added to the graveyard'); if (!grid) setTimeout(() => location.href = 'graveyard.html', 700);
 });
 
 /* ---------- fx: hero tombstones + particles ---------- */
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 (function yard() {
   const y = $('#yard'), n = innerWidth < 700 ? 6 : 11;
+  if (!y) return;
   for (let i = 0; i < n; i++) {
     const t = document.createElement('div'), z = Math.random(), w = 60 + z * 90;
     t.className = 'tomb';
@@ -289,3 +305,5 @@ const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 })();
 
 refresh();
+const hb = $('.hero-bg');
+if (hb && !reduce) addEventListener('pointermove', e => { hb.style.transform = `scale(1.08) translate(${(e.clientX / innerWidth - .5) * -18}px,${(e.clientY / innerHeight - .5) * -12}px)`; }, { passive: true });
